@@ -25,8 +25,10 @@ def spew(file_name):
     log.debug("Source path: {}".format(source_path))
     try: 
         with open(source_path, 'r', encoding='utf-8') as source:
+            stuff = ""
             for line in source:
-                print(line.strip())
+                stuff += line.strip()
+            return stuff
     except OSError as error:
         log.warn("Failed to open or read file")
         log.warn("Requested file was {}".format(source_path))
