@@ -104,24 +104,32 @@ def respond(sock):
 		scenario = 0
 	else:
 		scenario = 3
-		if "/" in extension or ".." in extension or "~" in extension:
+		if "//" in extension or ".." in extension or "~" in extension:
 			scenario = 2
-		if ".html" in extension or ".css" in extension:
-			scenario = 1
+		if "." in extension and ".." not in extension:
+			if ".html" in extension or ".css" in extension:
+				options = config.configuration()
+				docroot = options.DOCROOT
+				path = ".//..//" + docroot + "//" + extension
+				from pathlib import Path # File check stuff: https://stackoverflow.com/questions/82831/how-do-i-check-whether-a-file-exists-using-python
+				file = Path(path)
+				if file.is_file(): # Whether the file exists or not
+					html = spew.spew(path)
+					scenario = 1
+			else:
+				scenario = 2
+	print("MAIN DEBUG:", extension, "gave scenario:", scenario)
 	if len(parts) > 1 and parts[0] == "GET" and scenario == 0:
 		transmit(STATUS_OK, sock)
 		transmit(CAT, sock)
 	elif len(parts) > 1 and parts[0] == "GET" and scenario == 1:
 		transmit(STATUS_OK, sock)
-		options = config.configuration()
-		docroot = options.DOCROOT
-		html = spew.spew(".//..//" + docroot + "//" + extension)
 		transmit(html, sock)
 	elif len(parts) > 1 and parts[0] == "GET" and scenario == 2:
-		transmit(STATUS_OK, sock)
+		transmit(STATUS_FORBIDDEN, sock)
 		transmit("403 ERROR", sock)
 	elif len(parts) > 1 and parts[0] == "GET" and scenario == 3:
-		transmit(STATUS_OK, sock)
+		transmit(STATUS_NOT_FOUND, sock)
 		transmit("404 ERROR", sock)
 	else:
 		log.info("Unhandled request: {}".format(request))

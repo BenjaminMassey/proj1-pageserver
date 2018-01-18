@@ -36,6 +36,7 @@ function expect_status() {
 
 expect_body trivia.html  "Seriously"
 expect_status nosuch.html "404"
-expect_status there/theybe.html 404
+expect_status there/theybe.html "404"
 expect_status there//theybe.html "403"
-expect_status there.xxx "403" 
+expect_status there.xxx "403"
+sleep 10
